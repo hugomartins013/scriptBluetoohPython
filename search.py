@@ -3,24 +3,29 @@ from bluetooth import *
 
 print "performing inquiry..."
 
-nearby_devices = discover_devices(lookup_names = True)
+nearby_devices = discover_devices(lookup_names = True) # Procura todos dispositivos próximos
 
-print "found %d devices" % len(nearby_devices)
+print "found %d devices" % len(nearby_devices) # Informa quantos dispositivos foram encontrados
 
-for name, addr in nearby_devices:
+for name, addr in nearby_devices: # Informa os dispositivos encontrados
      print " %s - %s" % (addr, name)
 
-'''
-server_socket=BluetoothSocket( RFCOMM )
+    name = name      # Nome do dispositivo
+    addr = addr      # Endereço do dispositivo
+    port = bluetooth.get_available_port (bluetooth.RFCOMM) #  Porta RFCOMM (.get_available_port pega a primeira disponível)
+    passkey = "1111" # passkey of the device you want to connect
 
-server_socket.bind((addr, 3 ))
-server_socket.listen(1)
+    # Interrompe outros processos de conexões bluetooth em execução
+    subprocess.call("kill -9 `pidof bluetooth-agent`",shell=True)
 
-client_socket, address = server_socket.accept()
+    # Nova conexão bluetooth
+    status = subprocess.call("bluetooth-agent " + passkey + " &",shell=True)
+    try:
+        s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        s.connect((addr[0,port[0]))
+    except bluetooth.btcommon.BluetoothError as err:
+        pass
 
-data = client_socket.recv(1024)
-
-client_socket.close()
-server_socket.close()
-'''
+s.recv(1024)
+s.send("Hello World!")
 
